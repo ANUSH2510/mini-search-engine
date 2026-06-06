@@ -1,5 +1,5 @@
 ## MiniCrawl — Web Crawler & Search Engine
-MiniCrawl is a search engine built in Java that crawls real websites, builds an inverted index, and returns TF-IDF ranked results through a web interface.
+MiniCrawl is a search engine built in Java that crawls real websites, builds an inverted index, and returns TF ranked results through a web interface.
 
 ## What It Does
 MiniCrawl starts from a seed URL and autonomously crawls the web using BFS. For each page it visits, the parser extracts readable text and outgoing links using Jsoup.
