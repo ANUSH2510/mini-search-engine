@@ -10,9 +10,11 @@ import java.util.*;
 @Controller
 public class SearchController {
     private final IndexEntryRepository indexEntryRepository;
+    private final PageRepository pageRepository;
 
-    public SearchController(IndexEntryRepository indexEntryRepository) {
+    public SearchController(IndexEntryRepository indexEntryRepository , PageRepository pageRepository) {
         this.indexEntryRepository=indexEntryRepository;
+        this.pageRepository=pageRepository;
     }
     @GetMapping("/")
     public String home() {
@@ -34,7 +36,9 @@ public class SearchController {
 
         Set<String> stopWords=Set.of("the" , "is" , "in" , "on" , "to" , "and","for","a","an","of");
 
-        Map<Page, Integer> pageScores = new HashMap<>();
+        Map<Page, Double> pageScores = new HashMap<>();
+        long totalDocuments = pageRepository.count();
+
         Map<Page, Integer> matchedWords = new HashMap<>();
 
         for(String word:words){
@@ -46,20 +50,24 @@ public class SearchController {
             for(IndexEntry indexEntry:results){
                 Page page=indexEntry.getPage();
 
-                int score=indexEntry.getFrequency();
+                double tf = indexEntry.getFrequency();
+                long documentFrequency = indexEntryRepository.countByWord(word);
+
+                double idf = Math.log((double) totalDocuments / (documentFrequency + 1));
+                double score = tf * idf;
                 if(page.getTitle().toLowerCase().contains(word)) {
                     score+=50;
                 }
-                pageScores.put(page,pageScores.getOrDefault(page,0)+ score);
+                pageScores.put(page,pageScores.getOrDefault(page,0.0)+ score);
 
                 matchedWords.put(page,matchedWords.getOrDefault(page,0)+ 1);
             }
         }
-        List<Map.Entry<Page, Integer>>sortedPages=new ArrayList<>(pageScores.entrySet());
+        List<Map.Entry<Page, Double>>sortedPages=new ArrayList<>(pageScores.entrySet());
 
         sortedPages.sort((a ,b) ->b.getValue().compareTo(a.getValue()));
 
-        for(Map.Entry<Page, Integer> entry:sortedPages){
+        for(Map.Entry<Page, Double> entry:sortedPages){
             Page page = entry.getKey();
             if(matchedWords.get(page) == words.length) {
                 String content = page.getContent();

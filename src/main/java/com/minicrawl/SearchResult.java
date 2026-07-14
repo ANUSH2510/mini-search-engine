@@ -3,14 +3,14 @@ package com.minicrawl;
 public class SearchResult {
     private String title;
     private String url;
-    private int frequency;
+    private double score;
     private String snippet;
 
-    public SearchResult(String title, String url, String snippet, int frequency) {
+    public SearchResult(String title, String url, String snippet, double score) {
         this.title = title;
         this.url = url;
         this.snippet = snippet;
-        this.frequency = frequency;
+        this.score = score;
 
     }
     public String getTitle() {
@@ -20,6 +20,6 @@ public class SearchResult {
         return url;
     }
     public String getSnippet() {return snippet;}
-    public int getFrequency() {return frequency;}
+    public double getScore() {return score;}
 
 }
